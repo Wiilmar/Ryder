@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./style.css">
+    <title>Document</title>
+</head>
+<body>
+    <div class="modal" id="modal">
+        <label for="identificacion">Identificación:</label>
+        <input type="number" id="identificacion"><br><br>
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre"><br><br>
+        <label for="nota1">Nota 1:</label>
+        <input type="number" id="nota1"><br><br>
+        <label for="nota2">Nota 2:</label>
+        <input type="number" id="nota2"><br><br>
+        <label for="nota3">Nota 3:</label>
+        <input type="number" id="nota3"><br><br>
+        <center>
+            <input type="button" id="calcular" value="Calcular">
+        </center>
+        <button id="cerrarModal">Cerrar</button>
+    </div>
+    <center>
+        <div>
+            <table border="1" id="tabla">
+                <thead>
+                    <th>Identificación</th>
+                    <th>Nombre</th>
+                    <th>Nota 1</th>
+                    <th>Nota 2</th>
+                    <th>Nota 3</th>
+                    <th>Nota Definitiva</th>
+                    <th>Acciones</th>
+                </thead>
+            </table>
+        </div>
+    </center>
+    <button id="abrirModal">Abrir Modal</button>
+    <script src="./backend.js"></script>
+</body>
+</html>
