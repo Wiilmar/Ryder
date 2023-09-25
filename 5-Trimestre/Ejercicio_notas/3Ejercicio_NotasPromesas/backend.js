@@ -1,143 +1,123 @@
-const modal = document.getElementById('modal');
-const tabla = document.getElementById('tabla');
+const tablaBody = document.getElementById("tabla-body");
+const identificacionInput = document.getElementById("identificacion");
+const nombreInput = document.getElementById("nombre");
+const nota1Input = document.getElementById("nota1");
+const nota2Input = document.getElementById("nota2");
+const nota3Input = document.getElementById("nota3");
+const agregarBtn = document.getElementById("agregar");
 
-const abrirModal = document.getElementById('abrirModal');
-const cerrarModal = document.getElementById('cerrarModal');
-
-let array = [];
-
-abrirModal.addEventListener('click', () => {
-    modal.style.display = 'block';
-});
-
-cerrarModal.addEventListener('click', () => {
-    modal.style.display = 'none';
-});
-
-function editar(i) {
-    let inputs = [];
-    for (let j = 1; j <= 5; j++) {
-        let input = document.getElementById(`input${j}_${i}`);
-        input.disabled = false;
-        inputs.push(input);
-    }
-    return inputs.map(input => input.value);
-}
-
-function guardar(i) {
-    return new Promise((resolve) => {
-        editar(i).then(nuevoValor => {
-            array[i].identificacion = nuevoValor[0];
-            array[i].nombre = nuevoValor[1];
-            array[i].nota[0] = parseFloat(nuevoValor[2]);
-            array[i].nota[1] = parseFloat(nuevoValor[3]);
-            array[i].nota[2] = parseFloat(nuevoValor[4]);
-
-            const nuevaDefinitiva = (array[i].nota[0] + array[i].nota[1] + array[i].nota[2]) / 3;
-            array[i].definitiva = nuevaDefinitiva;
-
-            nuevoValor.forEach((valor, j) => {
-                let input = document.getElementById(`input${j + 1}_${i}`);
-                input.value = valor;
-                input.disabled = true;
-            });
-
-            setTabla();
-            resolve();
-        });
-    });
-}
-
-function eliminar(id) {
-    array = array.filter(e => e.ideli !== id);
-    setTabla();
-}
-
-function setTabla() {
-    tabla.innerHTML = '';
-    let head = document.createElement('thead');
-    head.innerHTML = `<th>Identificación</th>
-    <th>Nombre</th>
-    <th>Nota 1</th>
-    <th>Nota 2</th>
-    <th>Nota 3</th>
-    <th>Nota Definitiva</th>
-    <th>Acciones</th>`;
-    array.forEach((e, i) => {
-        let editarBtn = document.createElement('button');
-        editarBtn.textContent = 'Editar';
-        let guardarBtn = document.createElement('button');
-        guardarBtn.textContent = 'Guardar';
-        let eliminarBtn = document.createElement('button');
-        eliminarBtn.textContent = 'Eliminar';
-        editarBtn.addEventListener('click', () => {
-            editar(i).then(() => {
-                // Resolver después de la edición
-                resolve();
-            });
-        });
-        guardarBtn.addEventListener('click', () => {
-            guardar(i).then(() => {
-                // Resolver después de guardar
-                resolve();
-            });
-        });
-
-        let fila = document.createElement('tr');
-        for (let j = 1; j <= 5; j++) {
-            let celda = document.createElement('td');
-            celda.innerHTML = `<input type='text' id='input${j}_${i}' value='${e[j]}' disabled>`;
-            fila.appendChild(celda);
-        }
-
-        let celdaDefinitiva = document.createElement('td');
-        celdaDefinitiva.innerHTML = `<input type='number' id='input6_${i}' value='${e.definitiva}' disabled>`;
-        fila.appendChild(celdaDefinitiva);
-
-        let celdaAcciones = document.createElement('td');
-        celdaAcciones.appendChild(editarBtn);
-        celdaAcciones.appendChild(guardarBtn);
-        celdaAcciones.appendChild(eliminarBtn);
-        fila.appendChild(celdaAcciones);
-        head.appendChild(fila);
-
-        eliminarBtn.onclick = () => {
-            eliminar(e.ideli);
-        };
-    });
-    tabla.appendChild(head);
-}
-
-function calcularPromedio(nota1, nota2, nota3) {
+let datos = []; 
+function calcularDefinitiva(nota1, nota2, nota3) {
     return (nota1 + nota2 + nota3) / 3;
 }
 
-function agregarDatos(nota1, nota2, nota3, identificacion, nombre) {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            const promedio = calcularPromedio(nota1, nota2, nota3);
-            const objeto = {
-                ideli: Date.now(),
-                identificacion: identificacion,
-                nombre: nombre,
-                nota: [nota1, nota2, nota3],
-                definitiva: promedio,
-            };
-            array.push(objeto);
-            resolve({ jugador: promedio });
-        }, 100);
-    });
+function crearFila(data) {
+    const fila = document.createElement("tr");
+    fila.innerHTML = `
+        <td>${data.identificacion}</td>
+        <td>${data.nombre}</td>
+        <td>${data.nota1}</td>
+        <td>${data.nota2}</td>
+        <td>${data.nota3}</td>
+        <td>${data.definitiva.toFixed(2)}</td>
+        <td>
+            <button onclick="editar(${data.id})">Editar</button>
+            <button onclick="eliminar(${data.id})">Eliminar</button>
+            <button onclick="guardar(${data.id})" style="display: none;">Guardar</button>
+        </td>
+    `;
+    fila.dataset.id = data.id;
+    tablaBody.appendChild(fila);
 }
 
-const boton = () => {
-    const nota1 = parseFloat(document.getElementById("nota1").value);
-    const nota2 = parseFloat(document.getElementById("nota2").value);
-    const nota3 = parseFloat(document.getElementById("nota3").value);
-    const identificacion = document.getElementById("identificacion").value;
-    const nombre = document.getElementById("nombre").value;
+function agregarDatos() {
+    const identificacion = identificacionInput.value.trim();
+    const nombre = nombreInput.value.trim();
+    const nota1 = parseFloat(nota1Input.value);
+    const nota2 = parseFloat(nota2Input.value);
+    const nota3 = parseFloat(nota3Input.value);
 
-    agregarDatos(nota1, nota2, nota3, identificacion, nombre).then((user) => {
-        setTabla();
+    if (!identificacion || !nombre || isNaN(nota1) || isNaN(nota2) || isNaN(nota3)) {
+        alert("Por favor, complete todos los campos correctamente.");
+        return;
+    }
+
+    const id = Date.now();
+    const definitiva = calcularDefinitiva(nota1, nota2, nota3);
+
+    const nuevoDato = { id, identificacion, nombre, nota1, nota2, nota3, definitiva };
+    datos.push(nuevoDato);
+    crearFila(nuevoDato);
+
+    identificacionInput.value = "";
+    nombreInput.value = "";
+    nota1Input.value = "";
+    nota2Input.value = "";
+    nota3Input.value = "";
+}
+
+function editar(id) {
+    const fila = document.querySelector(`[data-id="${id}"]`);
+    const botones = fila.querySelectorAll("button");
+    const tds = fila.querySelectorAll("td");
+
+    tds[0].innerHTML = `<input type="number" value="${tds[0].textContent}" id="edit-identificacion-${id}">`;
+    tds[1].innerHTML = `<input type="text" value="${tds[1].textContent}" id="edit-nombre-${id}">`;
+    tds[2].innerHTML = `<input type="number" value="${tds[2].textContent}" id="edit-nota1-${id}">`;
+    tds[3].innerHTML = `<input type="number" value="${tds[3].textContent}" id="edit-nota2-${id}">`;
+    tds[4].innerHTML = `<input type="number" value="${tds[4].textContent}" id="edit-nota3-${id}">`;
+
+    botones[0].style.display = "none";
+    botones[1].style.display = "none";
+    botones[2].style.display = "block";
+}
+
+function guardar(id) {
+    const fila = document.querySelector(`[data-id="${id}"]`);
+    const botones = fila.querySelectorAll("button");
+    const tds = fila.querySelectorAll("td");
+
+    const editIdentificacion = document.getElementById(`edit-identificacion-${id}`);
+    const editNombre = document.getElementById(`edit-nombre-${id}`);
+    const editNota1 = document.getElementById(`edit-nota1-${id}`);
+    const editNota2 = document.getElementById(`edit-nota2-${id}`);
+    const editNota3 = document.getElementById(`edit-nota3-${id}`);
+
+    const identificacion = editIdentificacion.value;
+    const nombre = editNombre.value;
+    const nota1 = parseFloat(editNota1.value);
+    const nota2 = parseFloat(editNota2.value);
+    const nota3 = parseFloat(editNota3.value);
+    const definitiva = calcularDefinitiva(nota1, nota2, nota3);
+
+    datos = datos.map((dato) => {
+        if (dato.id === id) {
+            dato.identificacion = identificacion;
+            dato.nombre = nombre;
+            dato.nota1 = nota1;
+            dato.nota2 = nota2;
+            dato.nota3 = nota3;
+            dato.definitiva = definitiva;
+        }
+        return dato;
     });
-};
 
+    tds[0].textContent = identificacion;
+    tds[1].textContent = nombre;
+    tds[2].textContent = nota1;
+    tds[3].textContent = nota2;
+    tds[4].textContent = nota3;
+    tds[5].textContent = definitiva.toFixed(2);
+
+    botones[0].style.display = "block";
+    botones[1].style.display = "block";
+    botones[2].style.display = "none";
+}
+
+function eliminar(id) {
+    datos = datos.filter((dato) => dato.id !== id);
+    const fila = document.querySelector(`[data-id="${id}"]`);
+    fila.remove();
+}
+
+agregarBtn.addEventListener("click", agregarDatos);

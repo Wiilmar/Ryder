@@ -1,71 +1,61 @@
 body {
-    background: rgb(221, 217, 214);
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
 }
 
-.modal {
-    display: none;
-    position: absolute;
-    background: white;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+.container {
+    max-width: 800px;
+    margin: 0 auto;
     padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
-/* Estilos para el botón "Calcular" */
-#calcular {
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 3px;
+h1, h2 {
+    text-align: center;
 }
 
-#calcular:hover {
-    background-color: #0056b3;
-}
-
-/* Estilos para el botón "Cerrar" */
-#cerrarModal {
-    background-color: #ff0000;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 3px;
-}
-
-#cerrarModal:hover {
-    background-color: #cc0000;
-}
-
-/* Estilos para la tabla */
-table {
-    border-collapse: collapse;
-    width: 100%;
+.form-container, .table-container {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 5px;
     margin-top: 20px;
 }
 
-table, th, td {
-    border: 1px solid #ccc;
+input[type="number"], input[type="text"], button {
+    width: 100%;
+    margin: 5px 0;
+    padding: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
 }
 
 th, td {
+    border: 1px solid #ddd;
     padding: 8px;
-    text-align: left;
+    text-align: center;
 }
 
-/* Estilos para el botón "Abrir Modal" */
-#abrirModal {
+th {
+    background-color: #f2f2f2;
+}
+
+button {
     background-color: #007bff;
     color: #fff;
     border: none;
-    padding: 10px 20px;
+    padding: 10px;
     cursor: pointer;
     border-radius: 3px;
 }
 
-#abrirModal:hover {
+button:hover {
     background-color: #0056b3;
 }
